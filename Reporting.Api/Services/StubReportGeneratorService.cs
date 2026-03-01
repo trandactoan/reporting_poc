@@ -1,11 +1,10 @@
-using System.IO.Compression;
 using System.Text;
 using Reporting.Shared.Models;
 
 namespace Reporting.Api.Services;
 
 /// <summary>
-/// Stub implementation — generates a minimal TRDP-like ZIP without requiring
+/// Stub implementation — generates a TRDX (plain XML) without requiring
 /// a Telerik license. Replace with TelerikReportGeneratorService once Telerik
 /// NuGet feed is configured.
 /// </summary>
@@ -22,27 +21,20 @@ public class StubReportGeneratorService : IReportGeneratorService
         _storage = storage;
     }
 
-    public Task<Stream> GenerateTrdpAsync(ReportTemplateConfig config, CancellationToken ct = default)
+    public Task<Stream> GenerateTrdxAsync(ReportTemplateConfig config, CancellationToken ct = default)
     {
-        _logger.LogInformation("Generating stub TRDP for template: {Name}", config.TemplateName);
+        _logger.LogInformation("Generating stub TRDX for template: {Name}", config.TemplateName);
 
-        // TRDP is a ZIP archive containing a report XML definition.
-        var outputStream = new MemoryStream();
-
-        using (var zip = new ZipArchive(outputStream, ZipArchiveMode.Create, leaveOpen: true))
-        {
-            var xmlEntry = zip.CreateEntry("definition.xml", CompressionLevel.Optimal);
-            using var writer = new StreamWriter(xmlEntry.Open(), Encoding.UTF8);
-            writer.Write(BuildReportXml(config));
-        }
-
-        outputStream.Position = 0;
-        return Task.FromResult<Stream>(outputStream);
+        // TRDX is a plain XML file — no ZIP packaging.
+        var xml   = BuildReportXml(config);
+        var bytes = new UTF8Encoding(false).GetBytes(xml);
+        Stream stream = new MemoryStream(bytes);
+        return Task.FromResult(stream);
     }
 
     public async Task<string> SaveTemplateAsync(ReportTemplateConfig config, CancellationToken ct = default)
     {
-        var stream = await GenerateTrdpAsync(config, ct);
+        var stream = await GenerateTrdxAsync(config, ct);
         var id = await _storage.SaveAsync(config.TemplateName, stream, ct);
         _logger.LogInformation("Saved template {Name} → {Id}", config.TemplateName, id);
         return id;
@@ -54,12 +46,11 @@ public class StubReportGeneratorService : IReportGeneratorService
     {
         var orientation = config.Body.Orientation == "Landscape" ? "Landscape" : "Portrait";
         var pageWidth   = orientation == "Landscape" ? "297mm" : "210mm";
-        var pageHeight  = orientation == "Landscape" ? "210mm" : "297mm";
 
-        var filters  = BuildFiltersXml(config.Filters);
-        var columns  = BuildDetailColumnsXml(config.Filters);
-        var header   = BuildHeaderXml(config.Header);
-        var footer   = BuildFooterXml(config.Footer);
+        var filters = BuildFiltersXml(config.Filters);
+        var columns = BuildDetailColumnsXml(config.Filters, orientation);
+        var header  = BuildHeaderXml(config.Header);
+        var footer  = BuildFooterXml(config.Footer);
 
         return $"""
             <?xml version="1.0" encoding="utf-8" ?>
@@ -78,9 +69,7 @@ public class StubReportGeneratorService : IReportGeneratorService
                 </DetailSection>
                 {footer}
               </Items>
-              <PageSettings>
-                <PageSettings PaperKind="A4" Landscape="{(orientation == "Landscape").ToString().ToLower()}" />
-              </PageSettings>
+              <PageSettings PaperKind="A4" Landscape="{(orientation == "Landscape").ToString().ToLower()}" />
             </Report>
             """;
     }
@@ -102,13 +91,15 @@ public class StubReportGeneratorService : IReportGeneratorService
         return sb.ToString();
     }
 
-    private static string BuildDetailColumnsXml(List<string> filters)
+    private static string BuildDetailColumnsXml(List<string> filters, string orientation)
     {
         if (filters.Count == 0) return string.Empty;
 
-        var sb  = new StringBuilder();
-        var x   = 0;
-        var col = 120; // mm per column
+        var pageWidth = orientation == "Landscape" ? 297 : 210;
+        var col       = pageWidth / filters.Count;
+
+        var sb = new StringBuilder();
+        var x  = 0;
 
         foreach (var f in filters)
         {

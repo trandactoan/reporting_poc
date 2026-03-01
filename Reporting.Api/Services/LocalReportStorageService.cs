@@ -1,7 +1,7 @@
 namespace Reporting.Api.Services;
 
 /// <summary>
-/// Stores TRDP files on the local file system under /storage/trdp/.
+/// Stores TRDX files on the local file system under /storage/trdx/.
 /// Swap out for a database or blob-storage implementation in production.
 /// </summary>
 public class LocalReportStorageService : IReportStorageService
@@ -14,8 +14,8 @@ public class LocalReportStorageService : IReportStorageService
         ILogger<LocalReportStorageService> logger)
     {
         _logger   = logger;
-        _basePath = config["Storage:TrdpPath"]
-                    ?? Path.Combine(AppContext.BaseDirectory, "storage", "trdp");
+        _basePath = config["Storage:TrdxPath"]
+                    ?? Path.Combine(AppContext.BaseDirectory, "storage", "trdx");
         Directory.CreateDirectory(_basePath);
     }
 
@@ -23,19 +23,19 @@ public class LocalReportStorageService : IReportStorageService
     {
         var id       = Guid.NewGuid().ToString("N");
         var safeName = string.Concat(name.Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '-'));
-        var fileName = $"{id}_{safeName}.trdp";
+        var fileName = $"{id}_{safeName}.trdx";
         var filePath = Path.Combine(_basePath, fileName);
 
         await using var file = File.Create(filePath);
         await content.CopyToAsync(file, ct);
 
-        _logger.LogInformation("Stored TRDP → {Path}", filePath);
+        _logger.LogInformation("Stored TRDX → {Path}", filePath);
         return id;
     }
 
     public Task<Stream?> LoadAsync(string id, CancellationToken ct = default)
     {
-        var match = Directory.GetFiles(_basePath, $"{id}_*.trdp").FirstOrDefault();
+        var match = Directory.GetFiles(_basePath, $"{id}_*.trdx").FirstOrDefault();
         if (match is null) return Task.FromResult<Stream?>(null);
 
         Stream stream = File.OpenRead(match);
@@ -44,7 +44,7 @@ public class LocalReportStorageService : IReportStorageService
 
     public Task<IEnumerable<(string Id, string Name, DateTime CreatedAt)>> ListAsync(CancellationToken ct = default)
     {
-        var result = Directory.GetFiles(_basePath, "*.trdp")
+        var result = Directory.GetFiles(_basePath, "*.trdx")
             .Select(f =>
             {
                 var info  = new FileInfo(f);

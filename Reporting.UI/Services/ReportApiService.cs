@@ -21,8 +21,8 @@ public class ReportApiService
         return await response.Content.ReadFromJsonAsync<SaveTemplateResponse>();
     }
 
-    /// <summary>Generates a TRDP and triggers a browser download.</summary>
-    public async Task<byte[]> GenerateTrdpAsync(ReportTemplateConfig config)
+    /// <summary>Generates a TRDX and triggers a browser download.</summary>
+    public async Task<byte[]> GenerateTrdxAsync(ReportTemplateConfig config)
     {
         var response = await _http.PostAsJsonAsync("api/report-templates/generate", config);
         response.EnsureSuccessStatusCode();

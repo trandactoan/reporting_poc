@@ -40,7 +40,7 @@ public class ReportTemplateController : ControllerBase
         });
     }
 
-    // POST api/report-templates/generate  →  downloads the .trdp file
+    // POST api/report-templates/generate  →  downloads the .trdx file
     [HttpPost("generate")]
     public async Task<IActionResult> Generate(
         [FromBody] ReportTemplateConfig config,
@@ -49,10 +49,10 @@ public class ReportTemplateController : ControllerBase
         if (string.IsNullOrWhiteSpace(config.TemplateName))
             return BadRequest(new ApiError { Message = "TemplateName is required." });
 
-        var stream   = await _generator.GenerateTrdpAsync(config, ct);
-        var fileName = $"{config.TemplateName.Replace(" ", "_")}.trdp";
+        var stream   = await _generator.GenerateTrdxAsync(config, ct);
+        var fileName = $"{config.TemplateName.Replace(" ", "_")}.trdx";
 
-        return File(stream, "application/octet-stream", fileName);
+        return File(stream, "application/xml", fileName);
     }
 
     // GET api/report-templates
@@ -71,6 +71,6 @@ public class ReportTemplateController : ControllerBase
         if (stream is null)
             return NotFound(new ApiError { Message = $"Template '{id}' not found." });
 
-        return File(stream, "application/octet-stream", $"{id}.trdp");
+        return File(stream, "application/xml", $"{id}.trdx");
     }
 }

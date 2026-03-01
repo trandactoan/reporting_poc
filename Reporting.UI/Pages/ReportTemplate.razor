@@ -223,7 +223,7 @@
             }
             <button class="btn rt-btn-preview" @onclick="OnPreview" disabled="@isBusy">Preview</button>
             <button class="btn rt-btn-save"    @onclick="OnSave"    disabled="@isBusy">Save</button>
-            <button class="btn rt-btn-saveas"  @onclick="OnGenerate" disabled="@isBusy">Generate .trdp</button>
+            <button class="btn rt-btn-saveas"  @onclick="OnGenerate" disabled="@isBusy">Generate .trdx</button>
         </div>
 
     </div>
@@ -340,8 +340,8 @@
         isBusy = true;
         try
         {
-            var bytes    = await ApiService.GenerateTrdpAsync(BuildConfig());
-            var fileName = $"{templateName.Replace(" ", "_")}.trdp";
+            var bytes    = await ApiService.GenerateTrdxAsync(BuildConfig());
+            var fileName = $"{templateName.Replace(" ", "_")}.trdx";
 
             // Trigger browser download via JS interop
             var base64  = Convert.ToBase64String(bytes);

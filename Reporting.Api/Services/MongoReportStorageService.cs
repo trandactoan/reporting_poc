@@ -34,7 +34,7 @@ public class MongoReportStorageService : IReportStorageService
             Id        = Guid.NewGuid().ToString("N"),
             Name      = name,
             CreatedAt = DateTime.UtcNow,
-            TrdpData  = ms.ToArray()
+            TrdxData  = ms.ToArray()
         };
 
         await _collection.InsertOneAsync(doc, cancellationToken: ct);
@@ -47,7 +47,7 @@ public class MongoReportStorageService : IReportStorageService
         var filter = Builders<ReportTemplateDocument>.Filter.Eq(d => d.Id, id);
         var doc    = await _collection.Find(filter).FirstOrDefaultAsync(ct);
 
-        return doc is null ? null : new MemoryStream(doc.TrdpData);
+        return doc is null ? null : new MemoryStream(doc.TrdxData);
     }
 
     public async Task<IEnumerable<(string Id, string Name, DateTime CreatedAt)>> ListAsync(CancellationToken ct = default)
@@ -56,7 +56,7 @@ public class MongoReportStorageService : IReportStorageService
             .Include(d => d.Id)
             .Include(d => d.Name)
             .Include(d => d.CreatedAt)
-            .Exclude(d => d.TrdpData);
+            .Exclude(d => d.TrdxData);
 
         var docs = await _collection
             .Find(Builders<ReportTemplateDocument>.Filter.Empty)
@@ -79,6 +79,6 @@ public class ReportTemplateDocument
     [BsonElement("createdAt")]
     public DateTime CreatedAt { get; set; }
 
-    [BsonElement("trdpData")]
-    public byte[] TrdpData { get; set; } = Array.Empty<byte>();
+    [BsonElement("trdxData")]
+    public byte[] TrdxData { get; set; } = Array.Empty<byte>();
 }
