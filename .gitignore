@@ -1,0 +1,49 @@
+# ── Build output ──────────────────────────────────────────────
+bin/
+obj/
+
+# ── .NET runtime & tooling ────────────────────────────────────
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+launchSettings.json.user
+
+# ── NuGet ─────────────────────────────────────────────────────
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+nuget.config.local
+
+# ── Rider / JetBrains ─────────────────────────────────────────
+# Keep .idea/ tracked so the run configuration (Start All) is shared,
+# but ignore user-specific and cache files inside it.
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/shelf/
+.idea/**/aws.xml
+.idea/**/contentModel.xml
+.idea/**/.name
+.idea/**/sonarlint/
+.idea/**/*.iml
+.idea/**/*.iws
+
+# ── OS ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Environment / secrets ─────────────────────────────────────
+.env
+.env.*
+appsettings.local.json
+appsettings.*.local.json
+
+# ── Local TRDP storage (replaced by MongoDB) ──────────────────
+**/storage/trdp/
+
+# ── Blazor WASM publish output ────────────────────────────────
+wwwroot/_framework/
+publish/
