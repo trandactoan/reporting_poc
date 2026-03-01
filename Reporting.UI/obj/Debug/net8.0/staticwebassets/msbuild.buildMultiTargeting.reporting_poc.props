@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/reporting_poc.props" />
-</Project>
