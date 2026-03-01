@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build /Users/trandactoan/Source/IMC/Reporting/reporting_poc/reporting_poc/reporting_poc.csproj)",
+      "Bash(dotnet build /Users/trandactoan/Source/IMC/Reporting/reporting_poc/reporting_poc.sln)",
+      "Bash(dotnet restore)",
+      "Bash(dotnet restore --force)",
+      "Bash(dotnet build --no-restore)"
+    ],
+    "additionalDirectories": [
+      "/Users/trandactoan/Source/IMC/Reporting/reporting_poc/.idea/.idea.reporting_poc/.idea"
+    ]
+  }
+}

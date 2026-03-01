@@ -1,0 +1,59 @@
+is_global = true
+build_property.EnableAotAnalyzer = 
+build_property.EnableSingleFileAnalyzer = 
+build_property.EnableTrimAnalyzer = false
+build_property.IncludeAllContentForSelfExtract = 
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = browser
+build_property.RootNamespace = reporting_poc
+build_property.RootNamespace = reporting_poc
+build_property.ProjectDir = /Users/trandactoan/Source/IMC/Reporting/reporting_poc/reporting_poc/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = false
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /Users/trandactoan/Source/IMC/Reporting/reporting_poc/reporting_poc
+build_property._RazorSourceGeneratorDebug = 
+
+[/Users/trandactoan/Source/IMC/Reporting/reporting_poc/reporting_poc/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/trandactoan/Source/IMC/Reporting/reporting_poc/reporting_poc/Pages/Counter.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQ291bnRlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/trandactoan/Source/IMC/Reporting/reporting_poc/reporting_poc/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSG9tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/trandactoan/Source/IMC/Reporting/reporting_poc/reporting_poc/Pages/Weather.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvV2VhdGhlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/trandactoan/Source/IMC/Reporting/reporting_poc/reporting_poc/Shared/FieldTreeNode.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL0ZpZWxkVHJlZU5vZGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/trandactoan/Source/IMC/Reporting/reporting_poc/reporting_poc/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/trandactoan/Source/IMC/Reporting/reporting_poc/reporting_poc/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0L01haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-itrcmzzxwy
+
+[/Users/trandactoan/Source/IMC/Reporting/reporting_poc/reporting_poc/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0L05hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-g92eb1zjf1
+
+[/Users/trandactoan/Source/IMC/Reporting/reporting_poc/reporting_poc/Pages/ReportTemplate.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUmVwb3J0VGVtcGxhdGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-2j62wpzo08

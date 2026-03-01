@@ -1,0 +1,399 @@
+@page "/report-template"
+@using Reporting.Shared.Models
+@using Reporting.UI.Services
+@inject ReportApiService ApiService
+@inject IJSRuntime JS
+
+<PageTitle>Report Template</PageTitle>
+
+<div class="rt-page">
+    <h4 class="rt-title">Add / Edit Report Template</h4>
+
+    <div class="rt-card">
+
+        <!-- General Information -->
+        <div class="rt-section-header" @onclick="() => ToggleSection(ref showGeneralInfo)">
+            <span class="rt-toggle-icon">@(showGeneralInfo ? "-" : "+")</span>
+            <span>General Information</span>
+        </div>
+        @if (showGeneralInfo)
+        {
+            <div class="rt-section-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Template Name</label>
+                        <input class="form-control" placeholder="Enter template name" @bind="templateName" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Description</label>
+                        <input class="form-control" placeholder="Enter description" @bind="templateDescription" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Version</label>
+                        <input class="form-control" placeholder="e.g. 1.0" @bind="templateVersion" />
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="rt-divider"></div>
+
+        <!-- Filters -->
+        <div class="rt-section-header" @onclick="() => ToggleSection(ref showFilters)">
+            <span class="rt-toggle-icon">@(showFilters ? "-" : "+")</span>
+            <span>Filters</span>
+        </div>
+        @if (showFilters)
+        {
+            <div class="rt-section-body">
+                <div class="rt-drag-drop-container">
+                    <!-- Left: Field Tree -->
+                    <div class="rt-fields-panel">
+                        <div class="rt-fields-title">Fields</div>
+                        @foreach (var node in fieldTree)
+                        {
+                            <FieldTreeNode Node="node" OnDragStart="HandleDragStart" />
+                        }
+                    </div>
+
+                    <!-- Right: Drop Zone -->
+                    <div class="rt-drop-zone @(isDragOver ? "rt-drop-zone--active" : "")"
+                         @ondragover:preventDefault
+                         @ondragover="HandleDragOver"
+                         @ondragleave="HandleDragLeave"
+                         @ondrop="HandleDrop">
+                        @if (droppedFilters.Count == 0)
+                        {
+                            <div class="rt-drop-hint">
+                                <span class="rt-drop-hint-icon">&#x2913;</span>
+                                <span class="rt-drop-hint-text">Drag fields here to add filters</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="rt-filter-chips">
+                                @foreach (var filter in droppedFilters)
+                                {
+                                    <div class="rt-chip">
+                                        <span>@filter</span>
+                                        <button class="rt-chip-remove" @onclick="() => RemoveFilter(filter)">&#x2715;</button>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="rt-divider"></div>
+
+        <!-- Scopes -->
+        <div class="rt-section-header" @onclick="() => ToggleSection(ref showScopes)">
+            <span class="rt-toggle-icon">@(showScopes ? "-" : "+")</span>
+            <span>Scopes</span>
+        </div>
+        @if (showScopes)
+        {
+            <div class="rt-section-body">
+                <div class="rt-scopes-grid">
+                    <div class="rt-scope-item">
+                        <label class="form-label">Sponsor</label>
+                        <select class="form-select" @bind="scopeSponsor">
+                            <option value="">-- Select --</option>
+                            <option>Pfizer</option>
+                            <option>Novartis</option>
+                            <option>AstraZeneca</option>
+                        </select>
+                    </div>
+                    <div class="rt-scope-item">
+                        <label class="form-label">Data Type</label>
+                        <select class="form-select" @bind="scopeDataType">
+                            <option value="">-- Select --</option>
+                            <option>Clinical</option>
+                            <option>Safety</option>
+                            <option>Lab</option>
+                        </select>
+                    </div>
+                    <div class="rt-scope-item">
+                        <label class="form-label">Therapeutic Area</label>
+                        <select class="form-select" @bind="scopeTherapeuticArea">
+                            <option value="">-- Select --</option>
+                            <option>Oncology</option>
+                            <option>Cardiology</option>
+                            <option>Neurology</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="rt-divider"></div>
+
+        <!-- Report Header -->
+        <div class="rt-section-header" @onclick="() => ToggleSection(ref showReportHeader)">
+            <span class="rt-toggle-icon">@(showReportHeader ? "-" : "+")</span>
+            <span>Report Header</span>
+        </div>
+        @if (showReportHeader)
+        {
+            <div class="rt-section-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Header Title</label>
+                        <input class="form-control" placeholder="Enter header title" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Logo Position</label>
+                        <select class="form-select">
+                            <option>-- Select --</option>
+                            <option>Left</option>
+                            <option>Center</option>
+                            <option>Right</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="rt-divider"></div>
+
+        <!-- Report Body -->
+        <div class="rt-section-header" @onclick="() => ToggleSection(ref showReportBody)">
+            <span class="rt-toggle-icon">@(showReportBody ? "-" : "+")</span>
+            <span>Report Body</span>
+        </div>
+        @if (showReportBody)
+        {
+            <div class="rt-section-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Font Size</label>
+                        <select class="form-select">
+                            <option>-- Select --</option>
+                            <option>10pt</option>
+                            <option>11pt</option>
+                            <option>12pt</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Orientation</label>
+                        <select class="form-select">
+                            <option>-- Select --</option>
+                            <option>Portrait</option>
+                            <option>Landscape</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="rt-divider"></div>
+
+        <!-- Report Footer -->
+        <div class="rt-section-header" @onclick="() => ToggleSection(ref showReportFooter)">
+            <span class="rt-toggle-icon">@(showReportFooter ? "-" : "+")</span>
+            <span>Report Footer</span>
+        </div>
+        @if (showReportFooter)
+        {
+            <div class="rt-section-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Footer Text</label>
+                        <input class="form-control" placeholder="Enter footer text" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Page Numbers</label>
+                        <select class="form-select">
+                            <option>-- Select --</option>
+                            <option>Show</option>
+                            <option>Hide</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Action Buttons -->
+        <div class="rt-actions">
+            @if (isBusy)
+            {
+                <span class="rt-spinner" title="Working…"></span>
+            }
+            <button class="btn rt-btn-preview" @onclick="OnPreview" disabled="@isBusy">Preview</button>
+            <button class="btn rt-btn-save"    @onclick="OnSave"    disabled="@isBusy">Save</button>
+            <button class="btn rt-btn-saveas"  @onclick="OnGenerate" disabled="@isBusy">Generate .trdp</button>
+        </div>
+
+    </div>
+</div>
+
+@if (showToast)
+{
+    <div class="rt-toast">@toastMessage</div>
+}
+
+@code {
+    // Section visibility
+    bool showGeneralInfo = false;
+    bool showFilters = true;
+    bool showScopes = true;
+    bool showReportHeader = false;
+    bool showReportBody = false;
+    bool showReportFooter = false;
+
+    // General Info fields
+    string templateName = "";
+    string templateDescription = "";
+    string templateVersion = "";
+
+    // Scope fields
+    string scopeSponsor = "";
+    string scopeDataType = "";
+    string scopeTherapeuticArea = "";
+
+    // Drag & Drop state
+    string? draggingField;
+    bool isDragOver = false;
+    List<string> droppedFilters = new();
+
+    // Toast / busy state
+    bool showToast = false;
+    bool isBusy    = false;
+    string toastMessage = "";
+
+    // Field tree data
+    List<FieldNode> fieldTree = new()
+    {
+        new FieldNode("Site", isExpanded: true, children: new()
+        {
+            new FieldNode("Name")
+        }),
+        new FieldNode("Participant", isExpanded: false, children: new()
+        {
+            new FieldNode("Subject ID"),
+            new FieldNode("Gender"),
+            new FieldNode("Age"),
+        }),
+        new FieldNode("Visit", isExpanded: false, children: new()
+        {
+            new FieldNode("Visit Date"),
+            new FieldNode("Visit Number"),
+        })
+    };
+
+    void ToggleSection(ref bool value) => value = !value;
+
+    void HandleDragStart(string fieldName) => draggingField = fieldName;
+
+    void HandleDragOver() => isDragOver = true;
+
+    void HandleDragLeave() => isDragOver = false;
+
+    void HandleDrop()
+    {
+        isDragOver = false;
+        if (draggingField != null && !droppedFilters.Contains(draggingField))
+        {
+            droppedFilters.Add(draggingField);
+        }
+        draggingField = null;
+    }
+
+    void RemoveFilter(string filter) => droppedFilters.Remove(filter);
+
+    async Task OnPreview()
+    {
+        await ShowToast("Preview: connect Telerik ReportViewer to see a live preview.");
+    }
+
+    async Task OnSave()
+    {
+        if (string.IsNullOrWhiteSpace(templateName))
+        {
+            await ShowToast("Please enter a Template Name before saving.");
+            return;
+        }
+
+        isBusy = true;
+        try
+        {
+            var result = await ApiService.SaveAsync(BuildConfig());
+            await ShowToast(result?.Message ?? "Saved!");
+        }
+        catch (Exception ex)
+        {
+            await ShowToast($"Save failed: {ex.Message}");
+        }
+        finally { isBusy = false; }
+    }
+
+    async Task OnGenerate()
+    {
+        if (string.IsNullOrWhiteSpace(templateName))
+        {
+            await ShowToast("Please enter a Template Name first.");
+            return;
+        }
+
+        isBusy = true;
+        try
+        {
+            var bytes    = await ApiService.GenerateTrdpAsync(BuildConfig());
+            var fileName = $"{templateName.Replace(" ", "_")}.trdp";
+
+            // Trigger browser download via JS interop
+            var base64  = Convert.ToBase64String(bytes);
+            await JS.InvokeVoidAsync("downloadFileFromBase64", fileName, base64);
+            await ShowToast($"{fileName} downloaded!");
+        }
+        catch (Exception ex)
+        {
+            await ShowToast($"Generate failed: {ex.Message}");
+        }
+        finally { isBusy = false; }
+    }
+
+    ReportTemplateConfig BuildConfig() => new()
+    {
+        TemplateName = templateName,
+        Description  = templateDescription,
+        Version      = templateVersion,
+        Filters      = droppedFilters.ToList(),
+        Scope        = new ScopeConfig
+        {
+            Sponsor         = scopeSponsor,
+            DataType        = scopeDataType,
+            TherapeuticArea = scopeTherapeuticArea
+        },
+        Header = new ReportHeaderConfig { Title = templateName },
+        Body   = new ReportBodyConfig(),
+        Footer = new ReportFooterConfig { ShowPageNumbers = true }
+    };
+
+    async Task ShowToast(string message)
+    {
+        toastMessage = message;
+        showToast = true;
+        StateHasChanged();
+        await Task.Delay(2500);
+        showToast = false;
+        StateHasChanged();
+    }
+
+    public class FieldNode
+    {
+        public string Name { get; set; }
+        public bool IsExpanded { get; set; }
+        public List<FieldNode> Children { get; set; }
+        public bool IsLeaf => Children == null || Children.Count == 0;
+
+        public FieldNode(string name, bool isExpanded = false, List<FieldNode>? children = null)
+        {
+            Name = name;
+            IsExpanded = isExpanded;
+            Children = children ?? new List<FieldNode>();
+        }
+    }
+}

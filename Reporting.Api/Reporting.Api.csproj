@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.28.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+
+    <!--
+      Telerik Reporting — uncomment after configuring the Telerik NuGet feed.
+      Feed URL: https://nuget.telerik.com/v3/index.json
+      Then swap StubReportGeneratorService → TelerikReportGeneratorService in Program.cs.
+
+      <PackageReference Include="Telerik.Reporting" Version="18.*" />
+      <PackageReference Include="Telerik.Reporting.Services.AspNetCore" Version="18.*" />
+    -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Reporting.Shared\Reporting.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

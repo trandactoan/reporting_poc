@@ -1,0 +1,60 @@
+@using static Reporting.UI.Pages.ReportTemplate
+
+<div class="rt-tree-node">
+    @if (Node.IsLeaf)
+    {
+        <div class="rt-tree-leaf @(isDragging ? "rt-tree-leaf--dragging" : "")"
+             draggable="true"
+             title="Drag to add as filter"
+             @ondragstart="OnDragStarted"
+             @ondragend="OnDragEnded">
+            <span class="rt-leaf-drag-handle">
+                <svg width="10" height="14" viewBox="0 0 10 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="2.5" cy="2.5" r="1.5" fill="#aaa"/>
+                    <circle cx="7.5" cy="2.5" r="1.5" fill="#aaa"/>
+                    <circle cx="2.5" cy="7"   r="1.5" fill="#aaa"/>
+                    <circle cx="7.5" cy="7"   r="1.5" fill="#aaa"/>
+                    <circle cx="2.5" cy="11.5" r="1.5" fill="#aaa"/>
+                    <circle cx="7.5" cy="11.5" r="1.5" fill="#aaa"/>
+                </svg>
+            </span>
+            <span class="rt-leaf-name">@Node.Name</span>
+        </div>
+    }
+    else
+    {
+        <div class="rt-tree-group" @onclick="Toggle">
+            <span class="rt-group-icon">@(Node.IsExpanded ? "▾" : "▸")</span>
+            <span class="rt-group-name">@Node.Name</span>
+        </div>
+        @if (Node.IsExpanded)
+        {
+            <div class="rt-tree-children">
+                @foreach (var child in Node.Children)
+                {
+                    <FieldTreeNode Node="child" OnDragStart="OnDragStart" />
+                }
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public FieldNode Node { get; set; } = default!;
+    [Parameter, EditorRequired] public EventCallback<string> OnDragStart { get; set; }
+
+    bool isDragging = false;
+
+    void Toggle() => Node.IsExpanded = !Node.IsExpanded;
+
+    async Task OnDragStarted(DragEventArgs e)
+    {
+        isDragging = true;
+        await OnDragStart.InvokeAsync(Node.Name);
+    }
+
+    void OnDragEnded(DragEventArgs e)
+    {
+        isDragging = false;
+    }
+}
